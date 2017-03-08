@@ -63,7 +63,7 @@ start_blink_server() {
   then
     abort 'Blink server not installed. Run `npm install -g node-blink1-server`.'
   else
-    curl "$BLINK_SERVER" &>/dev/null || blink1-server "$BLINK_PORT" &
+    curl "$BLINK_SERVER" &>/dev/null || blink1-server "$BLINK_PORT" &>/dev/null &
   fi
 }
 
@@ -96,7 +96,7 @@ disable_mac_notification_center() {
   if [ "$(uname)" == "Darwin" ]
   then
     info "Disabling Mac OSX notification center"
-    launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist
+    quietly launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist
     ok
   fi
 }
