@@ -7,7 +7,7 @@
 git_branch_name() { git rev-parse --abbrev-ref HEAD 2>/dev/null; }
 jira_ticket() {
   local branch=$(git_branch_name)
-  local ticket=$(echo $branch | sed 's/.*\([a-zA-Z]\{2,\}-[0-9]\{2,\}\)/\1/')
+  local ticket=$(echo $branch | sed 's/.*\([a-zA-Z]\{2\}-[0-9]\{2\}\)/\1/') # TODO
   if [ "$ticket" == "$branch" ]
   then
     echo "?"
@@ -92,13 +92,31 @@ start_slack_do_not_disturb() {
   fi
 }
 
+disable_mac_notification_center() {
+  if [ "$(uname)" == "Darwin" ]
+  then
+    info "Disabling Mac OSX notification center"
+    launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist
+    ok
+  fi
+}
+
+enable_mac_notification_center() {
+  if [ "$(uname)" == "Darwin" ]
+  then
+    launchctl load -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist
+  fi
+}
+
 cleanup(){
   local focus_seconds="$(expr $FOCUS_MINUTES \* 60)"
   sleep "$focus_seconds" && \
     quietly change_slack_presence "$SLACK_AVAILABLE"
     quietly change_blink_color "$BLINK_GREEN"
+    quietly enable_mac_notification_center
 }
 
+disable_mac_notification_center
 start_rescue_time
 start_blink_server
 change_blink_color "$BLINK_RED"
