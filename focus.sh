@@ -1,9 +1,12 @@
 #!/bin/sh
 #
 # USAGE:
-# focus [minutes] (Defaults to 25)
+#
+# focus [minutes=25] [target=?]
 
 FOCUS_MINUTES="${1-25}"
+FOCUS_TARGET="${2-?}"
+FOCUS_HISTORY_FILE="$HOME/.focus_history"
 
 quietly() {
   "$@" &>/dev/null
@@ -21,6 +24,18 @@ BLINK_GREEN="233AF23A"
 info() { printf -- "\033[00;34m..\033[0m  %s " "$*"; }
 ok() { echo "\033[00;32m✓\033[0m"; }
 abort() { echo "!!! $*" >&2; exit 1; }
+epoch() { date +%s; }
+print_line() { printf "%-15s %-15s %-15s\n" "$1" "$2" "$3"; }
+title() { print_line "EPOCH" "FOCUS_TIME" "TARGET"; }
+event() { print_line "$(epoch)" "$FOCUS_MINUTES" "$@"; }
+add_to_history() { "$@" >> "$FOCUS_HISTORY_FILE"; }
+
+log_focus() {
+  info "Updating ~/.focus_history"
+  if [ ! -f "$FOCUS_HISTORY_FILE" ]; then add_to_history title; fi
+  add_to_history event "$FOCUS_TARGET"
+  ok
+}
 
 change_slack_presence() {
   if [ -n "$SLACK_TOKEN" ]
@@ -78,4 +93,5 @@ start_blink_server
 change_blink_color "$BLINK_RED"
 change_slack_presence "$SLACK_AWAY"
 start_slack_do_not_disturb
+log_focus
 cleanup &
