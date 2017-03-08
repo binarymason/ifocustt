@@ -2,24 +2,23 @@
 #
 # USAGE:
 #
-# focus [minutes=25] [target=?]
+# focus [minutes=25] [target=?|JIRA ticket in git branch]
 
-FOCUS_MINUTES="${1-25}"
-FOCUS_TARGET="${2-?}"
-FOCUS_HISTORY_FILE="$HOME/.focus_history"
-
-quietly() {
-  "$@" &>/dev/null
+git_branch_name() { git rev-parse --abbrev-ref HEAD 2>/dev/null; }
+jira_ticket() {
+  local branch=$(git_branch_name)
+  local ticket=$(echo $branch | sed 's/.*\([a-zA-Z]\{2,\}-[0-9]\{2,\}\)/\1/')
+  if [ "$ticket" == "$branch" ]
+  then
+    echo "?"
+  else
+    echo "$ticket"
+  fi
 }
 
-IFTTT_MAKER_KEY=$(cat ~/.secrets/ifttt-maker 2>/dev/null)
-SLACK_TOKEN=$(cat ~/.secrets/slack-token 2>/dev/null)
-SLACK_AWAY="away"
-SLACK_AVAILABLE="auto"
-BLINK_PORT="8754"
-BLINK_SERVER="http://localhost:$BLINK_PORT/blink1"
-BLINK_RED="23EA5B5B"
-BLINK_GREEN="233AF23A"
+FOCUS_MINUTES="${1-25}"
+FOCUS_TARGET="${2-$(jira_ticket)}"
+FOCUS_HISTORY_FILE="$HOME/.focus_history"
 
 info() { printf -- "\033[00;34m..\033[0m  %s " "$*"; }
 ok() { echo "\033[00;32m✓\033[0m"; }
@@ -37,6 +36,14 @@ log_focus() {
   ok
 }
 
+quietly() {
+  "$@" &>/dev/null
+}
+
+SLACK_TOKEN=$(cat ~/.secrets/slack-token 2>/dev/null)
+SLACK_AWAY="away"
+SLACK_AVAILABLE="auto"
+
 change_slack_presence() {
   if [ -n "$SLACK_TOKEN" ]
   then
@@ -47,6 +54,10 @@ change_slack_presence() {
   fi
 }
 
+BLINK_PORT="8754"
+BLINK_SERVER="http://localhost:$BLINK_PORT/blink1"
+BLINK_RED="23EA5B5B"
+BLINK_GREEN="233AF23A"
 start_blink_server() {
   if ! command -v blink1-server &> /dev/null
   then
@@ -62,6 +73,7 @@ change_blink_color() {
   curl "$BLINK_SERVER/fadeToRGB?rgb=%$color" &>/dev/null && ok
 }
 
+IFTTT_MAKER_KEY=$(cat ~/.secrets/ifttt-maker 2>/dev/null)
 start_rescue_time() {
   if [ -n "$IFTTT_MAKER_KEY" ]
   then
@@ -79,7 +91,6 @@ start_slack_do_not_disturb() {
     curl -X POST "$url" &>/dev/null && ok
   fi
 }
-
 
 cleanup(){
   local focus_seconds="$(expr $FOCUS_MINUTES \* 60)"
