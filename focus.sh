@@ -58,12 +58,13 @@ BLINK_PORT="8754"
 BLINK_SERVER="http://localhost:$BLINK_PORT/blink1"
 BLINK_RED="23EA5B5B"
 BLINK_GREEN="233AF23A"
+BLINK_ORANGE="23FFBF00"
 start_blink_server() {
   if ! command -v blink1-server &> /dev/null
   then
     abort 'Blink server not installed. Run `npm install -g node-blink1-server`.'
   else
-    curl "$BLINK_SERVER" &>/dev/null || blink1-server "$BLINK_PORT" &>/dev/null &
+    quietly curl "$BLINK_SERVER" || blink1-server "$BLINK_PORT" &
   fi
 }
 
@@ -71,6 +72,13 @@ change_blink_color() {
   local color="$1"
   info "Changing blink to $color"
   curl "$BLINK_SERVER/fadeToRGB?rgb=%$color" &>/dev/null && ok
+}
+
+strobe_blink_color() {
+  local color="$1"
+  local seconds="$2"
+  local blink_rate="0.5" # both on and off together finishes in one second
+  curl "$BLINK_SERVER/blink?rgb=%$color&time=$blink_rate&repeats=$seconds" &>/dev/null && ok
 }
 
 IFTTT_MAKER_KEY=$(cat ~/.secrets/ifttt-maker 2>/dev/null)
@@ -109,18 +117,20 @@ enable_mac_notification_center() {
 }
 
 cleanup(){
-  local focus_seconds="$(expr $FOCUS_MINUTES \* 60)"
-  sleep "$focus_seconds" && \
+  local focus_seconds=$(echo "$FOCUS_MINUTES * 60" | bc)
+  local break_seconds=$(echo "$focus_seconds * .2" | bc)
+  sleep "$focus_seconds" && quietly strobe_blink_color "$BLINK_ORANGE" "$break_seconds"
+  sleep "$break_seconds" && \
     quietly change_slack_presence "$SLACK_AVAILABLE"
-    quietly change_blink_color "$BLINK_GREEN"
     quietly enable_mac_notification_center
+    quietly change_blink_color "$BLINK_GREEN"
 }
 
 disable_mac_notification_center
 start_rescue_time
 start_blink_server
-change_blink_color "$BLINK_RED"
 change_slack_presence "$SLACK_AWAY"
 start_slack_do_not_disturb
 log_focus
+change_blink_color "$BLINK_RED"
 cleanup &
