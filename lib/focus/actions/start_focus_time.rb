@@ -33,7 +33,7 @@ module Focus
       actions.each do |action, keyword_arguments|
         klass = constantize(action)
         args  = downcase(keyword_arguments)
-        STDOUT.puts "#{klass}.call(#{args})" if $DEBUG
+        debug_output "#{klass}.call(#{args})"
         klass.call(args)
       end
     end

@@ -22,6 +22,10 @@ module Focus
         OptionParser.new do |opts|
           opts.banner = "Usage: example.rb [options]"
 
+          opts.on("-d", "--debug", "Run focus with more verbose STDOUT") do
+            $DEBUG = true
+          end
+
           opts.on("-tTIME", "--time=TIME", "Alias to minutes") do |t|
             args.minutes = t
           end

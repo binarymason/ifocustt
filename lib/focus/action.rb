@@ -18,5 +18,9 @@ module Focus
     def focus_seconds
       context.minutes.to_f * 60
     end
+
+    def debug_output(*args)
+      Focus::STDOUT.debug_output args
+    end
   end
 end
