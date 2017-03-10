@@ -18,10 +18,9 @@ gem "focus-cli"
 
 Focus gives you a single command: `focus`.  The beauty is what can happen next.
 
-You can specify multiple [actions](./lib/focus/actions) in a `.focus.yml` [file](./config/default.yml) in either your project or home directory and the will be run sequentially whenever you need to `focus`.
+You can specify multiple [actions](./lib/focus/actions) in a `.focus.yml` [file](./config/default.yml) in either your project or home directory and they will be run sequentially whenever you need to `focus`.
 
-
-This is built with the [pomodoro technique](wikipedia.org/wiki/Pomodoro_Technique) in mind and defaults to 25 minute intervals.
+This is built with the [pomodoro technique](https://wikipedia.org/wiki/Pomodoro_Technique) in mind and defaults to 25 minute intervals.
 If you want to see a log of your `focus` sessions, they are logged to `~/.focus_history`.
 
 ## Getting the most out of your time.
