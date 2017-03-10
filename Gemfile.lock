@@ -1,3 +1,10 @@
+PATH
+  remote: .
+  specs:
+    focus (0.0.1)
+      httparty (~> 0.14.0)
+      interactor (~> 3.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -76,9 +83,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  focus!
   guard-rspec
-  httparty (~> 0.14.0)
-  interactor (~> 3.0)
   pry
   rake
   rubocop

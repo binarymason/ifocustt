@@ -11,8 +11,17 @@ module Focus
     end
 
     def toggle
-      setting = context.enabled ? "load" : "unload"
       `launchctl #{setting} -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist &>/dev/null`
+
+      if context.enabled?
+        `killall NotificationCenter &>/dev/null`
+      else
+        `open -a NotificationCenter &>/dev/null`
+      end
+    end
+
+    def setting
+      context.enabled ? "load" : "unload"
     end
   end
 end
