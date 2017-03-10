@@ -2,5 +2,14 @@ require "focus/action"
 require "focus/actions"
 require "focus/cli"
 require "focus/config"
+require "focus/config_loader"
 require "focus/stdout"
 require "focus/string"
+
+module Focus
+  class << self
+    def root
+      File.expand_path("../..", __FILE__)
+    end
+  end
+end
