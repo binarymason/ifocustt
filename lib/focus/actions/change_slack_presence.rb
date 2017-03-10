@@ -9,7 +9,8 @@ module Focus
     def perform
       if SLACK_TOKEN
         url = "#{SLACK_API_URL}/users.setPresence?token=#{SLACK_TOKEN}&presence=#{presence}"
-        system"curl -X POST '#{url}' &>/dev/null"
+        res = HTTParty.post url
+        res.code == 201
       else
         true
       end

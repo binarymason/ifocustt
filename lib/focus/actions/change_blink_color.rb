@@ -7,7 +7,9 @@ module Focus
     private
 
     def perform
-      system "curl '#{BLINK_SERVER}/fadeToRGB?rgb=%#{context.color}' &>/dev/null"
+      url = "#{BLINK_SERVER}/fadeToRGB?rgb=%#{context.color}"
+      res = HTTParty.get(url)
+      res.code == 200
     end
   end
 end

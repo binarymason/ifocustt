@@ -13,7 +13,7 @@ module Focus
       Blink server not installed. Run `npm install -g node-blink1-server`.
       EOF
 
-      context.fail!(error: error_msg) unless blink_server_installed
+      context.fail!(error: error_msg) unless blink_server_installed?
     end
 
     def blink_server_installed?

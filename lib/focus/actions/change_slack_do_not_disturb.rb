@@ -12,15 +12,18 @@ module Focus
 
     def url
       if context.enabled
-        base_url + "&num_minutes=#{focus_minutes}"
+        "#{base_url}&num_minutes=#{focus_minutes}"
       else
         base_url
       end
     end
 
     def base_url
-      action = context.enabled ? "dnd.setSnooze" : "dnd.endSnooze"
       "#{SLACK_API_URL}/#{action}?token=#{SLACK_TOKEN}"
+    end
+
+    def action
+      context.enabled ? "dnd.setSnooze" : "dnd.endSnooze"
     end
   end
 end

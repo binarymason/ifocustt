@@ -3,7 +3,7 @@ require "yaml"
 module Focus
   class StartFocusTime < Action
     def call
-      context.actions = YAML.load_file("./config/default.yml")
+      context.actions = ConfigLoader.load
       focus
       take_break
       cleanup
