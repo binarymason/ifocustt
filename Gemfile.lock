@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    focus (0.0.1)
+    focus-cli (0.0.2)
       httparty (~> 0.14.0)
       interactor (~> 3.0)
 
@@ -83,7 +83,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  focus!
+  focus-cli!
   guard-rspec
   pry
   rake

@@ -5,6 +5,7 @@ require "focus/config"
 require "focus/config_loader"
 require "focus/stdout"
 require "focus/string"
+require "focus/version"
 
 module Focus
   class << self

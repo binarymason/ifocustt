@@ -12,8 +12,10 @@ Gem::Specification.new do |s|
     Sometimes it takes a lot to block out distractions.
   EOF
 
+   s.executables = ["focus"]
   s.homepage = "http://github.com/binarymason/focus"
   s.email = "binarymason@users.noreply.github.com"
+  s.files = `git ls-files assets bin config lib LICENSE.txt README.me`.split
   s.licenses = ["MIT"]
   s.summary = "A simple focus command, with extensibility in mind."
 
