@@ -1,25 +1,13 @@
 ---
+SecretsFile: "~/.secrets"
+
 OnFocus:
-  StartBlinkServer:
   ToggleMacNotificationCenter:
     Enabled: false
-  StartRescueTime:
-  ChangeSlackPresence:
-    Presence: "away"
-  ChangeSlackDoNotDisturb:
-    Enabled: true
   LogFocusTime:
-  ChangeBlinkColor:
-    Color: "23EA5B5B"
 
 OnBreak:
 
 OnCompletion:
   ToggleMacNotificationCenter:
     Enabled: true
-  ChangeSlackPresence:
-    Presence: "auto"
-  ChangeSlackDoNotDisturb:
-    Enabled: false
-  ChangeBlinkColor:
-    Color:  "233AF23A"
