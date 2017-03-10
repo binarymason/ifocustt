@@ -1,0 +1,13 @@
+# FOCUS_TARGET       = "${2-$(jira_ticket)}".freeze
+BLINK_GREEN        = "233AF23A".freeze
+BLINK_PORT         = "8754".freeze
+BLINK_RED          = "23EA5B5B".freeze
+BLINK_SERVER       = "http://localhost:#{BLINK_PORT}/blink1".freeze
+FOCUS_HISTORY_FILE = "#{ENV['HOME']}/.focus_history".freeze
+FOCUS_MINUTES      = "${1-25}".freeze
+IFTTT_MAKER_KEY    = `cat ~/.secrets/ifttt-maker 2>/dev/null`.chomp.freeze
+SLACK_API_URL      = "https://slack.com/api".freeze
+SLACK_AVAILABLE    = "auto".freeze
+SLACK_AWAY         = "away".freeze
+SLACK_TOKEN        = `cat ~/.secrets/slack-token 2>/dev/null`.chomp.freeze
+FOCUS_HISTORY_PATH = "#{ENV['HOME']}/.focus_history".freeze
