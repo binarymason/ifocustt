@@ -20,5 +20,7 @@ Gem::Specification.new do |s|
   s.summary = "A simple focus command, with extensibility in mind."
 
   s.add_runtime_dependency("httparty", "~> 0.14.0")
+  s.add_runtime_dependency("tty", "~> 0.6.1")
+  s.add_runtime_dependency("paint", "~> 2.0.0")
   s.add_runtime_dependency("interactor", "~> 3.0")
 end

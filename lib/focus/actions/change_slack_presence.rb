@@ -10,7 +10,7 @@ module Focus
       if SLACK_TOKEN
         url = "#{SLACK_API_URL}/users.setPresence?token=#{SLACK_TOKEN}&presence=#{presence}"
         res = HTTParty.post url
-        res.code == 201
+        res.code == 200
       else
         true
       end

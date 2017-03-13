@@ -5,7 +5,8 @@ require "pp"
 module Focus
   class Parser
     DEFAULT_VALUES = {
-      minutes: 25
+      minutes: 25,
+      quiet:   true
     }.freeze
 
     class << self
@@ -22,8 +23,12 @@ module Focus
         OptionParser.new do |opts|
           opts.banner = "Usage: example.rb [options]"
 
-          opts.on("-d", "--debug", "Run focus with more verbose STDOUT") do
-            $DEBUG = true
+          opts.on("-v", "--verbose", "Run focus with more verbose STDOUT") do
+            args.quiet = false
+          end
+
+          opts.on("-d", "--daemonize", "Allow focus to be forked to the background") do
+            args.daemonize = true
           end
 
           opts.on("-tTIME", "--time=TIME", "Alias to minutes") do |t|

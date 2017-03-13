@@ -19,6 +19,13 @@ module Focus
       context.minutes.to_f * 60
     end
 
+    def evaluate_step(klass, args)
+      step = "#{klass}.call(#{args})"
+      Focus::STDOUT.step(step, quiet: context.quiet) do
+        klass.call(args)
+      end
+    end
+
     def debug_output(*args)
       Focus::STDOUT.debug_output args
     end

@@ -1,4 +1,5 @@
 require "yaml"
+require "tty"
 
 module Focus
   class StartFocusTime < Action
@@ -20,10 +21,40 @@ module Focus
     end
 
     def cleanup
-      fork do
-        sleep focus_seconds
-        perform_actions "OnCompletion"
+      if context.daemonize
+        fork { execute(quiet: true) }
+      else
+        execute
       end
+    end
+
+    def execute(quiet: false)
+      every_second { advance_progress_bar unless quiet }
+      perform_actions "OnCompletion"
+    end
+
+    def progress_bar
+      @bar ||= TTY::ProgressBar.new "focusing [:bar] :elapsed" do |config|
+        config.total    = focus_seconds
+        config.interval = 1
+        config.width    = 40
+        config.clear    = true
+      end
+    end
+
+    def every_second
+      end_time = Time.now + focus_seconds
+
+      while Time.now < end_time
+        timestamp = Time.now
+        yield
+        interval = 1 - (Time.now - timestamp)
+        sleep(interval) if interval.positive?
+      end
+    end
+
+    def advance_progress_bar
+      progress_bar.advance
     end
 
     def perform_actions(event)
@@ -33,8 +64,8 @@ module Focus
       actions.each do |action, keyword_arguments|
         klass = constantize(action)
         args  = downcase(keyword_arguments)
-        debug_output "#{klass}.call(#{args})"
-        klass.call(args)
+
+        evaluate_step(klass, args)
       end
     end
 
