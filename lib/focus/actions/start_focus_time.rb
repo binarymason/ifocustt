@@ -3,6 +3,8 @@ require "tty"
 
 module Focus
   class StartFocusTime < Action
+    DEFAULT_CONTEXT_KEYS = %i(minutes target quiet daemonize).freeze
+
     attr_reader :action
 
     def call
@@ -83,13 +85,22 @@ module Focus
         klass = constantize(action)
         args  = downcase(keyword_arguments)
 
-        evaluate_step klass, with_current_context(args)
+        evaluate_step klass, with_default_context(args)
       end
     end
 
-    def with_current_context(args)
+    def with_default_context(args)
       hsh = args.to_h
-      hsh.merge context.to_h
+      hsh.merge default_hsh
+    end
+
+    def default_hsh
+      slice_hash context.to_h, DEFAULT_CONTEXT_KEYS
+    end
+
+    def slice_hash(hsh, *args)
+      keys = args.flatten
+      hsh.select { |k, _v| keys.include? k }
     end
 
     def downcase(thing)
