@@ -3,7 +3,6 @@ require "tty"
 
 module Focus
   class StartFocusTime < Action
-
     attr_reader :action
 
     def call
@@ -11,6 +10,7 @@ module Focus
       focus
       take_break
       cleanup
+      happy_message
     end
 
     private
@@ -77,6 +77,7 @@ module Focus
     def perform_actions(event)
       actions = context.actions[event]
       return unless actions
+      Focus::STDOUT.print_line "Starting #{event}...\r"
 
       actions.each do |action, keyword_arguments|
         klass = constantize(action)
@@ -93,6 +94,11 @@ module Focus
       thing.each_with_object({}) do |(key, value), obj|
         obj[key.underscore] = value
       end
+    end
+
+    def happy_message
+      Focus::STDOUT.puts_line nil
+      Focus::STDOUT.puts_line "Complete!"
     end
 
     def constantize(str)
