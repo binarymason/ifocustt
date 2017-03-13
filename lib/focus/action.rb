@@ -24,7 +24,9 @@ module Focus
     end
 
     def evaluate_step(klass, args)
-      step = "#{klass}.call(#{args})"
+      action = klass.to_s.gsub(/^.*::/, "")
+      step = "Running #{action}..."
+
       Focus::STDOUT.step(step, quiet: context.quiet) do
         klass.call(args)
       end
