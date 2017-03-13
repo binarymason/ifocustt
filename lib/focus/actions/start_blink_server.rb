@@ -2,18 +2,18 @@ module Focus
   class StartBlinkServer < Action
     def call
       verify_blink_server_installed
-      res = HTTParty.get(BLINK_SERVER)
-      start_blink_server if res.code != 200
+      HTTParty.get(BLINK_SERVER)
+    rescue Errno::ECONNREFUSED
+      start_blink_server
     end
 
     private
 
     def verify_blink_server_installed
-      error_msg = <<-EOF
-      Blink server not installed. Run `npm install -g node-blink1-server`.
-      EOF
+      error_msg = \
+        "Blink server not installed. Run `npm install -g node-blink1-server`."
 
-      context.fail!(error: error_msg) unless blink_server_installed?
+      raise ArgumentError, error_msg unless blink_server_installed?
     end
 
     def blink_server_installed?
@@ -22,7 +22,7 @@ module Focus
 
     def start_blink_server
       fork do
-        system("blink1-server #{BLINK_PORT}")
+        system("blink1-server #{BLINK_PORT} &>/dev/null")
       end
     end
   end
