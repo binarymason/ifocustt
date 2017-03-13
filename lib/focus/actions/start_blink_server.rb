@@ -9,7 +9,7 @@ module Focus
     private
 
     def verify_blink_server_installed
-      error_msg = <<~EOF
+      error_msg = <<-EOF
       Blink server not installed. Run `npm install -g node-blink1-server`.
       EOF
 

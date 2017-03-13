@@ -3,6 +3,9 @@ require "tty"
 
 module Focus
   class StartFocusTime < Action
+
+    attr_reader :action
+
     def call
       context.actions = ConfigLoader.load
       focus
@@ -13,37 +16,51 @@ module Focus
     private
 
     def focus
+      @action = :focus
       perform_actions "OnFocus"
+      handle_progress_bar
     end
 
     def take_break
+      @action = :break
       perform_actions "OnBreak"
+      handle_progress_bar
     end
 
     def cleanup
       if context.daemonize
-        fork { execute(quiet: true) }
+        fork { perform_actions "OnCompletion" }
       else
-        execute
+        perform_actions "OnCompletion"
       end
     end
 
-    def execute(quiet: false)
-      every_second { advance_progress_bar unless quiet }
-      perform_actions "OnCompletion"
+    def progress_bar
+      bar_type = @bar ? @bar.format.split.first : :not_defined
+      return @bar if bar_type == action.to_s
+
+      @bar = build_progress_bar
     end
 
-    def progress_bar
-      @bar ||= TTY::ProgressBar.new "focusing [:bar] :elapsed" do |config|
-        config.total    = focus_seconds
-        config.interval = 1
-        config.width    = 40
-        config.clear    = true
+    def build_progress_bar
+      TTY::ProgressBar.new "#{action} [:bar] :elapsed" do |config|
+        config.total       = seconds_for_action
+        config.interval    = 1
+        config.width       = 40
+      end
+    end
+
+    def seconds_for_action
+      case action
+      when :focus then focus_seconds
+      when :break then break_seconds
+      else
+        raise "Unknown action: '#{action}'"
       end
     end
 
     def every_second
-      end_time = Time.now + focus_seconds
+      end_time = Time.now + seconds_for_action
 
       while Time.now < end_time
         timestamp = Time.now
@@ -53,8 +70,8 @@ module Focus
       end
     end
 
-    def advance_progress_bar
-      progress_bar.advance
+    def handle_progress_bar
+      every_second { progress_bar.advance unless context.daemonize }
     end
 
     def perform_actions(event)
