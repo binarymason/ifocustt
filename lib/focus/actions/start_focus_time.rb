@@ -83,8 +83,13 @@ module Focus
         klass = constantize(action)
         args  = downcase(keyword_arguments)
 
-        evaluate_step(klass, args)
+        evaluate_step klass, with_current_context(args)
       end
+    end
+
+    def with_current_context(args)
+      hsh = args.to_h
+      hsh.merge context.to_h
     end
 
     def downcase(thing)
