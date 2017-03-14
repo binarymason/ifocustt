@@ -7,8 +7,9 @@ module Focus
     private
 
     def perform
-      if IFTTT_MAKER_KEY
-        url = "https://maker.ifttt.com/trigger/#{event}/with/key/#{IFTTT_MAKER_KEY}"
+      token = Config.ifttt_maker_key
+      if token
+        url = "https://maker.ifttt.com/trigger/#{event}/with/key/#{token}"
         HTTParty.post url
       else
         true

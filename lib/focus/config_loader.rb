@@ -1,8 +1,8 @@
 module Focus
   class ConfigLoader
     class << self
-      def load
-        YAML.load_file config_file
+      def load(config)
+        YAML.load_file(config_file)[config]
       end
 
       private

@@ -1,13 +1,63 @@
-# FOCUS_TARGET       = "${2-$(jira_ticket)}".freeze
-BLINK_GREEN        = "233AF23A".freeze
-BLINK_PORT         = "8754".freeze
-BLINK_RED          = "23EA5B5B".freeze
-BLINK_SERVER       = "http://localhost:#{BLINK_PORT}/blink1".freeze
-FOCUS_HISTORY_FILE = "#{ENV['HOME']}/.focus_history".freeze
-FOCUS_MINUTES      = "${1-25}".freeze
-IFTTT_MAKER_KEY    = `cat ~/.secrets/ifttt-maker 2>/dev/null`.chomp.freeze
-SLACK_API_URL      = "https://slack.com/api".freeze
-SLACK_AVAILABLE    = "auto".freeze
-SLACK_AWAY         = "away".freeze
-SLACK_TOKEN        = `cat ~/.secrets/slack-token 2>/dev/null`.chomp.freeze
-FOCUS_HISTORY_PATH = "#{ENV['HOME']}/.focus_history".freeze
+require "dotenv"
+
+module Focus
+  class Config < OpenStruct
+    class << self
+      def method_missing(m, *args, &block) # rubocop:disable MethodMissing
+        config.send(m, *args, &block)
+      end
+
+      def config
+        @config ||= new
+      end
+    end
+
+    def initialize
+      source_env
+      super(defaults)
+      ingest _hardcoded.merge(custom_config)
+    end
+
+    private
+
+    def ingest(hsh)
+      hsh.each do |key, value|
+        send("#{key}=", value)
+      end
+    end
+
+    def custom_config
+      @custom_config ||= Focus::ConfigLoader.load("config")
+    end
+
+    def defaults
+      {
+        blink_port:         ENV["BLINK_PORT"]         || 8754,
+        focus_history_file: ENV["FOCUS_HISTORY_FILE"] || "#{ENV['HOME']}/.focus_history",
+        focus_minutes:      ENV["FOCUS_MINUTES"]      || 25,
+        slack_api_url:      ENV["SLACK_API_URL"]      || "https://slack.com/api",
+        ifttt_maker_key:    ENV["IFTTT_MAKER_KEY"],
+        slack_token:        ENV["SLACK_TOKEN"]
+      }
+    end
+
+    def _hardcoded
+      raise "`blink_port` is undefined" unless blink_port
+
+      {
+        blink_server:    "http://localhost:#{blink_port}/blink1",
+        slack_available: "auto",
+          slack_away:      "away"
+      }
+    end
+
+    def source_env
+      return unless custom_config.respond_to? :keys
+      relative_path = custom_config["env_file"] || ".env"
+      path = File.expand_path relative_path
+
+      return unless File.exist?(path)
+      Dotenv.load path
+    end
+  end
+end

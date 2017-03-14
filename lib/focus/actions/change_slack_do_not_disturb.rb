@@ -7,7 +7,7 @@ module Focus
     private
 
     def perform
-      SLACK_TOKEN ? HTTParty.post(url) : true
+      Config.slack_token ? HTTParty.post(url) : true
     end
 
     def url
@@ -19,7 +19,7 @@ module Focus
     end
 
     def base_url
-      "#{SLACK_API_URL}/#{action}?token=#{SLACK_TOKEN}"
+      "#{Config.slack_api_url}/#{action}?token=#{Config.slack_token}"
     end
 
     def action

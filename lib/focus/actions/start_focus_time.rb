@@ -8,7 +8,7 @@ module Focus
     attr_reader :action
 
     def call
-      context.actions = ConfigLoader.load
+      context.actions = ConfigLoader.load("actions")
       focus
       take_break
       cleanup
@@ -77,15 +77,17 @@ module Focus
     end
 
     def perform_actions(event)
-      actions = context.actions[event]
+      actions = context.actions.shift[event]
       return unless actions
       Focus::STDOUT.print_line "Starting #{event}...\r"
 
-      actions.each do |action, keyword_arguments|
-        klass = constantize(action)
-        args  = downcase(keyword_arguments)
+      actions.each do |hsh|
+        hsh.each do |action, keyword_arguments|
+          klass = constantize(action)
+          args  = downcase(keyword_arguments)
 
-        evaluate_step klass, with_default_context(args)
+          evaluate_step klass, with_default_context(args)
+        end
       end
     end
 

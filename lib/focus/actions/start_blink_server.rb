@@ -2,7 +2,7 @@ module Focus
   class StartBlinkServer < Action
     def call
       verify_blink_server_installed
-      HTTParty.get(BLINK_SERVER)
+      HTTParty.get(Config.blink_server)
     rescue Errno::ECONNREFUSED
       start_blink_server
     end
@@ -22,7 +22,7 @@ module Focus
 
     def start_blink_server
       fork do
-        system("blink1-server #{BLINK_PORT} &>/dev/null")
+        system("blink1-server #{Config.blink_port} &>/dev/null")
       end
     end
   end
