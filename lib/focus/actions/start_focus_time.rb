@@ -19,14 +19,23 @@ module Focus
 
     def focus
       @action = :focus
-      perform_actions "OnFocus"
-      handle_progress_bar
+
+      if context.daemonize
+        fork { perform_actions "OnFocus" }
+      else
+        perform_actions "OnFocus"
+        handle_progress_bar
+      end
     end
 
     def take_break
       @action = :break
-      perform_actions "OnBreak"
-      handle_progress_bar
+      if context.daemonize
+        fork { perform_actions "OnBreak" }
+      else
+        perform_actions "OnBreak"
+        handle_progress_bar
+      end
     end
 
     def cleanup
@@ -79,7 +88,7 @@ module Focus
     def perform_actions(event)
       actions = context.actions.shift[event]
       return unless actions
-      Focus::STDOUT.print_line "Starting #{event}...\r"
+      Focus::STDOUT.print_line "Starting #{event}...\r", quiet: context.quiet
 
       actions.each do |hsh|
         hsh.each do |action, keyword_arguments|
@@ -115,6 +124,7 @@ module Focus
     end
 
     def happy_message
+      return if context.quiet
       Focus::STDOUT.puts_line nil
       Focus::STDOUT.puts_line "Complete!"
     end
