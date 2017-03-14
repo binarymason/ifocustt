@@ -8,17 +8,21 @@ module Focus
       private
 
       def config_file
-        project_file = "./.focus.yml"
-        home_file    = "#{ENV['HOME']}/.focus.yml"
-        default_file = "#{Focus.root}/config/default.yml"
+        opts = {
+          project_file:    "./.focus.yml",
+          focus_repo_file: "#{Focus.root}/.focus.yml",
+          home_file:       "#{ENV['HOME']}/.focus.yml",
+          default_file:    "#{Focus.root}/config/default.yml"
+        }
 
-        if File.exist?(project_file)
-          project_file
-        elsif File.exist?(home_file)
-          home_file
-        else
-          default_file
+        opts.each do |_k, file|
+          break file if exist?(file)
         end
+      end
+
+      def exist?(path)
+        full_path = File.expand_path(path)
+        File.exist?(full_path) || File.symlink?(full_path)
       end
     end
   end
