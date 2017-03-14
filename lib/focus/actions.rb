@@ -1,10 +1,5 @@
-require "focus/actions/change_blink_color"
-require "focus/actions/change_slack_do_not_disturb"
-require "focus/actions/change_slack_presence"
-require "focus/actions/log_focus_time"
-require "focus/actions/run_shell_command"
-require "focus/actions/start_blink_server"
-require "focus/actions/start_focus_time"
-require "focus/actions/start_rescue_time"
-require "focus/actions/strobe_blink_color"
-require "focus/actions/toggle_mac_notification_center"
+actions = Dir.glob("../focus/lib/focus/actions/*").map do |file|
+  File.expand_path file
+end
+
+actions.each { |file| require file }
