@@ -6,6 +6,8 @@ require "focus/config_loader"
 require "focus/formatter"
 require "focus/stdout"
 require "focus/string"
+require "focus/util"
+require "focus/utils"
 require "focus/version"
 
 module Focus

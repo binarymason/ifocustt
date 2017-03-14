@@ -28,5 +28,13 @@ module Focus
     def title
       entry "EPOCH", "FOCUS_MINUTES", "TARGET"
     end
+
+    def focus_target
+      jira_ticket || super
+    end
+
+    def jira_ticket
+      @ticket ||= Utils::ParseJiraTicketFromGitBranch.call.jira_ticket
+    end
   end
 end

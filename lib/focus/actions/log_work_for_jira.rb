@@ -1,25 +1,38 @@
 module Focus
-  class LogWorkForJira < Action
-    JIRA_TICKET_RGX = /[a-z]+-\d+/i
-
+  class PostWorkLogToJira < Action
     def call
-      return unless git_branch && jira_ticket
-      LogFocusTime.call(minutes: focus_minutes, target: jira_ticket)
+      return unless jira_ticket && focus_seconds >= 60
+      HTTParty.post(issue_url, options)
     end
 
     private
 
-    def git_branch
-      @branch ||= parse_git_branch
+    def issue_url
+      "#{Config.jira_url}/issue/#{jira_ticket}/worklog"
     end
 
-    def parse_git_branch
-      branch = `git rev-parse --abbrev-ref HEAD 2>/dev/null`.chomp
-      branch.empty? ? nil : branch
+    def options
+      {
+        body:       body.to_json,
+        basic_auth: auth,
+        headers:    headers
+      }
+    end
+
+    def body
+      { timeSpentSeconds: focus_seconds, comment: context.comment.to_s }
+    end
+
+    def auth
+      { username: Config.jira_username, password: Config.jira_password }
+    end
+
+    def headers
+      { "Content-Type" => "application/json" }
     end
 
     def jira_ticket
-      @ticket ||= git_branch.scan(JIRA_TICKET_RGX).first
+      context.jira_ticket ||= Utils::ParseJiraTicketFromGitBranch.call.jira_ticket
     end
   end
 end
