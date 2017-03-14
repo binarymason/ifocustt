@@ -1,0 +1,33 @@
+---
+actions:
+  - OnFocus:
+    - StartBlinkServer:
+    - ToggleMacNotificationCenter:
+        enabled: false
+    - StartRescueTime:
+    - ChangeSlackPresence:
+        presence: "away"
+    - ChangeSlackDoNotDisturb:
+        enabled: true
+    - ChangeBlinkColor:
+        color: "23EA5B5B"
+
+  - OnBreak:
+    - StrobeBlinkColor:
+        color:  "23FFBF00"
+
+  - OnCompletion:
+    - ToggleMacNotificationCenter:
+        enabled: true
+    - ChangeSlackPresence:
+        presence: "auto"
+    - ChangeSlackDoNotDisturb:
+        enabled: false
+    - ChangeBlinkColor:
+        color:  "233AF23A"
+    - LogWorkForJira:
+
+config:
+  blink_port: 1234
+  focus_history_file: "~/.focus_history"
+

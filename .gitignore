@@ -1,2 +1,4 @@
 *.gem
 .env
+.focus.yml
+!examples/**/*
