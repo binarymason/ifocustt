@@ -14,11 +14,15 @@ module Focus
 
     def initialize
       source_env
-      super(defaults)
-      ingest _hardcoded.merge(custom_config)
+      super(configurations)
+      ingest _hardcoded
     end
 
     private
+
+    def configurations
+      defaults.merge(custom_config)
+    end
 
     def ingest(hsh)
       hsh.each do |key, value|
@@ -32,22 +36,22 @@ module Focus
 
     def defaults
       {
-        blink_port:         ENV["BLINK_PORT"]         || 8754,
-        focus_history_file: ENV["FOCUS_HISTORY_FILE"] || "#{ENV['HOME']}/.focus_history",
-        focus_minutes:      ENV["FOCUS_MINUTES"]      || 25,
-        slack_api_url:      ENV["SLACK_API_URL"]      || "https://slack.com/api",
-        ifttt_maker_key:    ENV["IFTTT_MAKER_KEY"],
-        slack_token:        ENV["SLACK_TOKEN"]
+        "blink_port"         => ENV["BLINK_PORT"]         || 8754,
+        "focus_history_file" => ENV["FOCUS_HISTORY_FILE"] || "#{ENV['HOME']}/.focus_history",
+        "focus_minutes"      => ENV["FOCUS_MINUTES"]      || 25,
+        "slack_api_url"      => ENV["SLACK_API_URL"]      || "https://slack.com/api",
+        "ifttt_maker_key"    => ENV["IFTTT_MAKER_KEY"],
+        "slack_token"        => ENV["SLACK_TOKEN"]
       }
     end
 
     def _hardcoded
-      raise "`blink_port` is undefined" unless blink_port
+      raise "`blink_port` was not defined" unless blink_port
 
       {
-        blink_server:    "http://localhost:#{blink_port}/blink1",
-        slack_available: "auto",
-          slack_away:      "away"
+        "blink_server"    => "http://localhost:#{blink_port}/blink1",
+        "slack_available" => "auto",
+        "slack_away"      => "away"
       }
     end
 
