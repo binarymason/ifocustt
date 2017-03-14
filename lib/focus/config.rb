@@ -4,7 +4,7 @@ module Focus
   class Config < OpenStruct
     class << self
       def method_missing(m, *args, &block) # rubocop:disable MethodMissing
-        config.send(m, *args, &block)
+        ENV[m.to_s.upcase] || config.send(m, *args, &block)
       end
 
       def config
@@ -36,12 +36,10 @@ module Focus
 
     def defaults
       {
-        "blink_port"         => ENV["BLINK_PORT"]         || 8754,
-        "focus_history_file" => ENV["FOCUS_HISTORY_FILE"] || "#{ENV['HOME']}/.focus_history",
-        "focus_minutes"      => ENV["FOCUS_MINUTES"]      || 25,
-        "slack_api_url"      => ENV["SLACK_API_URL"]      || "https://slack.com/api",
-        "ifttt_maker_key"    => ENV["IFTTT_MAKER_KEY"],
-        "slack_token"        => ENV["SLACK_TOKEN"]
+        "blink_port"         => 8754,
+        "focus_history_file" => "#{ENV['HOME']}/.focus_history",
+        "focus_minutes"      => 25,
+        "slack_api_url"      => "https://slack.com/api"
       }
     end
 
