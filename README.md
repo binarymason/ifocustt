@@ -1,18 +1,19 @@
+[![gem-version](https://badge.fury.io/rb/ifocustt.svg)](https://badge.fury.io/rb/ifocustt)
 # ifocustt = "if focused, then that"
 
 ![one-does-not-simply-focus](./assets/focus.jpg)
 
-### Installation
+## Installation
 
 ```
 gem install ifocustt
 ```
 
-### What is ifocustt?
+## What is ifocustt? :computer::zap:
 
 `ifocustt` gives you a single command: `focus`.  The beauty is what can happen next.  You can specify any [actions](./lib/focus/actions), arguments and configuration settings you want in a `.focus.yml` file in either your project or home directory and they will be evaluated whenever you need to `focus`.
 
-## Getting the most out of your time.
+## Getting the most out of your time
 
 Sometimes we don't realize how many things we would like to have during `focus` time.
 
