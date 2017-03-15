@@ -2,6 +2,8 @@ require "httparty"
 require "interactor"
 
 module Focus
+  class FailedActionError < StandardError; end
+
   class Action
     include Interactor
 
@@ -28,12 +30,21 @@ module Focus
       step = "Running #{action}..."
 
       Focus::STDOUT.step(step, quiet: context.quiet) do
-        klass.call(args)
+        result = klass.call(args)
+        raise FailedActionError, error_message(result) unless result.success?
       end
+    end
+
+    def error_message(obj)
+      "#{obj.action}: #{obj.error}"
     end
 
     def debug_output(*args)
       Focus::STDOUT.debug_output args
+    end
+
+    def fail_action!(opts = {})
+      context.fail!(opts.merge(action: self.class.to_s.split("::").last))
     end
   end
 end

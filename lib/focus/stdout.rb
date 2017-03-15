@@ -14,8 +14,10 @@ module Focus
       def step(string, opts = { quiet: false })
         quiet = opts[:quiet]
         print_line(Focus::Formatter.step(string), quiet: quiet)
-        yield
+        yield if block_given?
         puts_line Focus::Formatter.ok, quiet: quiet
+      rescue FailedActionError, MissingConfiguration => error
+        puts_line Focus::Formatter.error error.to_s
       end
 
       def debug_output(str)

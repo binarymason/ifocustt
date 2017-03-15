@@ -9,7 +9,7 @@ module Focus
     end
 
     def error(error)
-      red("!!! Error:") + " #{error}"
+      " " + red("!!! Error:") + " #{error}"
     end
 
     def blue(string)

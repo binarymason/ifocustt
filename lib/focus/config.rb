@@ -1,6 +1,8 @@
 require "dotenv"
 
 module Focus
+  class MissingConfiguration < ArgumentError; end
+
   class Config < OpenStruct
     class << self
       def method_missing(m, *args, &block) # rubocop:disable MethodMissing
@@ -13,7 +15,7 @@ module Focus
 
       def raise_undefined_config(m)
         error = "(#{m}) neither `ENV['#{m.to_s.upcase}']` or `.focus.yml#config.#{m}` are defined"
-        raise ArgumentError, error
+        raise MissingConfiguration, error
       end
     end
 
