@@ -2,6 +2,7 @@
 
 file = File.dirname(File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__)
 $LOAD_PATH.unshift(File.expand_path("../lib", file))
+
 require "focus"
 
 Focus::CLI.run! ARGV
