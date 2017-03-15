@@ -1,13 +1,11 @@
 ---
-SecretsFile: "~/.secrets"
+actions:
+  - OnFocus:
+    - ToggleMacNotificationCenter:
+        enabled: false
 
-OnFocus:
-  ToggleMacNotificationCenter:
-    Enabled: false
-  LogFocusTime:
+  - OnBreak:
 
-OnBreak:
-
-OnCompletion:
-  ToggleMacNotificationCenter:
-    Enabled: true
+  - OnCompletion:
+    - ToggleMacNotificationCenter:
+        enabled: true

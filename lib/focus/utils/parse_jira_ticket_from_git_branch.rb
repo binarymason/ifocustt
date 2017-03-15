@@ -11,7 +11,7 @@ module Focus
 
       def jira_ticket
         git_branch = parse_git_branch
-        git_branch.scan(JIRA_TICKET_RGX).first
+        git_branch.to_s.scan(JIRA_TICKET_RGX).first
       end
 
       def parse_git_branch

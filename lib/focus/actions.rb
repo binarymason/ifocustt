@@ -1,4 +1,4 @@
-actions = Dir.glob("../focus/lib/focus/actions/*").map do |file|
+actions = Dir.glob("#{Focus.root}/lib/focus/actions/*").map do |file|
   File.expand_path file
 end
 
