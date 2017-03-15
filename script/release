@@ -9,8 +9,8 @@ cd $(dirname "$0")/..
 
 # Build a new gem archive.
 
-rm -rf focus-*.gem
-gem build -q focus.gemspec
+rm -rf ifocustt-*.gem
+gem build -q ifocustt.gemspec
 
 # Make sure we're on the master branch.
 
@@ -21,7 +21,7 @@ gem build -q focus.gemspec
 
 # Figure out what version we're releasing.
 
-tag=v$(find focus-*.gem | sed 's/^focus-cli\(.*\)\.gem$/\1/')
+tag=v$(find ifocustt-*.gem | sed 's/^ifocustt\(.*\)\.gem$/\1/')
 
 # Make sure we haven't released this version before.
 
@@ -34,5 +34,5 @@ git fetch -t origin
 
 # Tag it and bag it.
 
-gem push focus-*.gem && git tag "$tag" &&
+gem push ifocustt-*.gem && git tag "$tag" &&
   git push origin master && git push origin "$tag"

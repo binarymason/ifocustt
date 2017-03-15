@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    focus-cli (0.0.3)
+    ifocustt (0.0.3)
       dotenv (~> 2.2.0)
       httparty (~> 0.14.0)
       interactor (~> 3.0)
@@ -147,8 +147,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  focus-cli!
   guard-rspec
+  ifocustt!
   pry
   rake
   rubocop

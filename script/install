@@ -12,7 +12,7 @@ then
   git clone https://github.com/binarymason/ifocustt.git "$FOCUS_REPO"
   {
     cd "$FOCUS_REPO"
-    bundle install
+    bundle install --deployment
   }
 fi
 
