@@ -9,41 +9,32 @@ module Focus
 
     def call
       context.actions = ConfigLoader.load("actions")
+      context.daemonize ? fork { _actions } : _actions
+    end
+
+    private
+
+    def _actions
       focus
       take_break
       cleanup
       happy_message
     end
 
-    private
-
     def focus
       @action = :focus
-
-      if context.daemonize
-        fork { perform_actions "OnFocus" }
-      else
-        perform_actions "OnFocus"
-        handle_progress_bar
-      end
+      perform_actions "OnFocus"
+      handle_progress_bar
     end
 
     def take_break
       @action = :break
-      if context.daemonize
-        fork { perform_actions "OnBreak" }
-      else
-        perform_actions "OnBreak"
-        handle_progress_bar
-      end
+      perform_actions "OnBreak"
+      handle_progress_bar
     end
 
     def cleanup
-      if context.daemonize
-        fork { perform_actions "OnCompletion" }
-      else
-        perform_actions "OnCompletion"
-      end
+      perform_actions "OnCompletion"
     end
 
     def progress_bar
@@ -75,14 +66,18 @@ module Focus
 
       while Time.now < end_time
         timestamp = Time.now
-        yield
+        yield if block_given?
         interval = 1 - (Time.now - timestamp)
         sleep(interval) if interval.positive?
       end
     end
 
     def handle_progress_bar
-      every_second { progress_bar.advance unless context.daemonize }
+      if context.daemonize
+        every_second # sleep
+      else
+        every_second { progress_bar.advance }
+      end
     end
 
     def perform_actions(event)
