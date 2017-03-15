@@ -1,27 +1,16 @@
-# Focus
+# ifocustt = "if focused, then that"
 
-![example](./assets/example.png)
+![one-does-not-simply-focus](./assets/focus.jpg)
 
 ### Installation
 
 ```
-gem install focus-cli
+gem install ifocustt
 ```
 
-Or, add this to your Gemfile and run `bundle install`
+### What is ifocustt?
 
-```
-gem "focus-cli"
-```
-
-### What is Focus?
-
-Focus gives you a single command: `focus`.  The beauty is what can happen next.
-
-You can specify multiple [actions](./lib/focus/actions) in a `.focus.yml` [file](./config/default.yml) in either your project or home directory and they will be run sequentially whenever you need to `focus`.
-
-This is built with the [pomodoro technique](https://wikipedia.org/wiki/Pomodoro_Technique) in mind and defaults to 25 minute intervals.
-If you want to see a log of your `focus` sessions, they are logged to `~/.focus_history`.
+`ifocustt` gives you a single command: `focus`.  The beauty is what can happen next.  You can specify any [actions](./lib/focus/actions), arguments and configuration settings you want in a `.focus.yml` file in either your project or home directory and they will be evaluated whenever you need to `focus`.
 
 ## Getting the most out of your time.
 
@@ -29,43 +18,72 @@ Sometimes we don't realize how many things we would like to have during `focus` 
 
 Examples of what you might like when you are focusing...
 
+* POST working time to JIRA
+
 * Disable Mac Notification Center
 
 * Update Slack presence to away
 
 * Run arbitrary shell command
 
-* Log JIRA working time
+* Change a [blink(1)](https://blink1.thingm.com/) to one color when you are focusing and another when you are free.
 
-* Change a blink(1) to one color when you are focusing and another when you are free.
+## Usage
+
+```
+Usage: focus [options]
+-v, --verbose                    Run focus with more verbose STDOUT
+-d, --daemonize                  Allow focus to be forked to the background
+-t, --target=TARGET              Specify what you are focusing on
+-m, --minutes=MINUTES            How many minutes to focus.
+-h, --help                       Prints this help
+
+```
+
+## How does it work?
+
+ Here's an example of a `~/.focus.yml` file:
+
+```
+---
+actions:
+  - OnFocus:
+    - ChangeSlackPresence:
+        presence: "away"
+
+  - OnBreak:
+    - RunShellCommand:
+        command:  "say time to take a break"
+
+  - OnCompletion:
+    - ChangeSlackPresence:
+        presence: "auto"
+    - PostWorkLogToJira:
+
+config:
+  focus_history_file: "~/.focus_history"
+  jira_url: "https://jira-instance.atlassian.net/rest/api/latest"
+  jira_username: "myusername"
+  jira_password: "mypassword"
+```
+What happens when you run `focus` with the `~/.focus.yml` file above:
+
+- `OnFocus`, it will immediately run the `ChangeSlackPresence` action with the arguments `{ presence: away }`
+- It will sleep for the amount of focus time (defaults to 25 minutes)
+- `OnBreak`, it will evaluate `RunShellCommand` and tell you to take a break!.
+- It will sleep for `20%` of whatever your focus time was.
+- `OnCompletion` will run your "cleanup" actions.  Notice that `PostWorkLogToJira` does not require any arguments.
+- Your focus session is complete!
+
+**NOTE:** that environment variables take precedence over configuration settings.  If you would prefer not to have `jira_password` in your `~/.focus.yml` file, it can be specified as an environment variable somewhere as `JIRA_PASSWORD`. If you want to source a particular file that contains secret environment variables, you can add that to your config block:
+
+```
+...
+
+config:
+  env_file: "~/.secrets"
+```
 
 ### Dependencies
 
-* If using [blink(1):](https://blink1.thingm.com/)
-```
-npm install -g node-blink1-server
-
-```
-
-
-### How do you run focus when the `focus-cli` gem is not in your bundle?
-
-The solution is to run within a Docker environment.
-Add this function to your `~/.bashrc`:
-
-```
-focus(){
-  docker run \
-    -it \
-    --rm \
-    --add-host="localhost:10.0.2.2" \
-    -v $(pwd):$(pwd) \
-    -w $(pwd) \
-    -v $HOME/:/home \
-    -v $HOME/.docker:/root/.docker:ro \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -p 8754:8754 \
-    -e "DOCKER_HOST_URL=$DOCKER_HOST" \
-    binarymason/focus-cli "$*"
-}
-```
+See each [action](./lib/focus/actions) for dependencies.
