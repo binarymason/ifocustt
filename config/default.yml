@@ -6,6 +6,6 @@ actions:
 
   - OnBreak:
 
-  - OnCompletion:
+  - Cleanup:
     - ToggleMacNotificationCenter:
         enabled: true

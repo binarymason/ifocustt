@@ -3,7 +3,7 @@ require "tty"
 
 module Focus
   class StartFocusTime < Action
-    DEFAULT_CONTEXT_KEYS = %i(minutes target quiet daemonize).freeze
+    DEFAULT_CONTEXT_KEYS = %i(minutes target quiet daemonize focus_start).freeze
 
     attr_reader :action
 
@@ -17,6 +17,10 @@ module Focus
     def _actions
       focus
       take_break
+    rescue SystemExit, Interrupt
+      context.quiet = false
+      Focus::STDOUT.title "Shutting down gracefully..."
+    ensure
       cleanup
       happy_message
     end
@@ -24,6 +28,7 @@ module Focus
     def focus
       @action = :focus
       perform_actions "OnFocus"
+      context.focus_start = Time.now.to_i
       handle_progress_bar
     end
 
@@ -34,7 +39,7 @@ module Focus
     end
 
     def cleanup
-      perform_actions "OnCompletion"
+      perform_actions "Cleanup"
     end
 
     def progress_bar
@@ -81,7 +86,7 @@ module Focus
     end
 
     def perform_actions(event)
-      actions = context.actions.shift[event]
+      actions = actions_to_perform(event)
       return unless actions
       Focus::STDOUT.print_line "Starting #{event}...\r", quiet: context.quiet
 
@@ -93,6 +98,11 @@ module Focus
           evaluate_step klass, with_default_context(args)
         end
       end
+    end
+
+    def actions_to_perform(event)
+      actions = context.actions.find { |x| x.keys.include? event }
+      actions[event] if actions
     end
 
     def with_default_context(args)
@@ -120,8 +130,7 @@ module Focus
 
     def happy_message
       return if context.quiet
-      Focus::STDOUT.puts_line nil
-      Focus::STDOUT.puts_line "Complete!"
+      Focus::STDOUT.puts_line "\nProcess complete."
     end
 
     def constantize(str)

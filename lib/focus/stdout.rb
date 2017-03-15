@@ -20,6 +20,13 @@ module Focus
         puts_line Focus::Formatter.error error.to_s
       end
 
+      def title(string)
+        puts
+        puts "-" * 50
+        puts string
+        puts "-" * 50
+      end
+
       def debug_output(str)
         ::STDOUT.puts str if $DEBUG
       end

@@ -1,7 +1,7 @@
 module Focus
   class PostWorkLogToJira < Action
     def call
-      return unless jira_ticket && focus_seconds >= 60
+      return unless jira_ticket && seconds_focused >= 60
       HTTParty.post(issue_url, options)
     end
 
@@ -20,7 +20,7 @@ module Focus
     end
 
     def body
-      { timeSpentSeconds: focus_seconds, comment: context.comment.to_s }
+      { timeSpentSeconds: seconds_focused, comment: context.comment.to_s }
     end
 
     def auth

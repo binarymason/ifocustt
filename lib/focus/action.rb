@@ -21,6 +21,10 @@ module Focus
       context.minutes.to_f * 60
     end
 
+    def seconds_focused
+      Time.now.to_i - context.focus_start
+    end
+
     def break_seconds
       focus_seconds * 0.2
     end

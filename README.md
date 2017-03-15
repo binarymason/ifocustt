@@ -55,7 +55,7 @@ actions:
     - RunShellCommand:
         command:  "say time to take a break"
 
-  - OnCompletion:
+  - Cleanup:
     - ChangeSlackPresence:
         presence: "auto"
     - PostWorkLogToJira:
@@ -72,7 +72,7 @@ What happens when you run `focus` with the `~/.focus.yml` file above:
 - It will sleep for the amount of focus time (defaults to 25 minutes)
 - `OnBreak`, it will evaluate `RunShellCommand` and tell you to take a break!.
 - It will sleep for `20%` of whatever your focus time was.
-- `OnCompletion` will run your "cleanup" actions.  Notice that `PostWorkLogToJira` does not require any arguments.
+- `Cleanup` is used for any actions to take place after focus time is complete.  Notice that `PostWorkLogToJira` does not require any arguments.
 - Your focus session is complete!
 
 **NOTE:** that environment variables take precedence over configuration settings.  If you would prefer not to have `jira_password` in your `~/.focus.yml` file, it can be specified as an environment variable somewhere as `JIRA_PASSWORD`. If you want to source a particular file that contains secret environment variables, you can add that to your config block:
