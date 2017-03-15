@@ -21,7 +21,7 @@ module Focus
 
       def build_parser(args) # rubocop:disable MethodLength
         OptionParser.new do |opts|
-          opts.banner = "Usage: example.rb [options]"
+          opts.banner = "Usage: focus [options]"
 
           opts.on("-v", "--verbose", "Run focus with more verbose STDOUT") do
             args.quiet = false
@@ -31,8 +31,8 @@ module Focus
             args.daemonize = true
           end
 
-          opts.on("-tTIME", "--time=TIME", "Alias to minutes") do |t|
-            args.minutes = t
+          opts.on("-t", "--target=TARGET", "Specify what you are focusing on") do |t|
+            args.target = t
           end
 
           opts.on("-mMINUTES", "--minutes=MINUTES", "How many minutes to focus.") do |m|
