@@ -6,15 +6,18 @@ module Focus
   class Config < OpenStruct
     class << self
       def method_missing(m, *args, &block) # rubocop:disable MethodMissing
-        config.env(m) || config.send(m, *args, &block) || raise_undefined_config(m)
+        config = new
+        config.send(m, *args, &block) || env(m) || raise_undefined_config(m)
       end
 
-      def config
-        @config ||= new
+      private
+
+      def env(m)
+        ENV[m.to_s.upcase]
       end
 
       def raise_undefined_config(m)
-        error = "(#{m}) neither `ENV['#{m.to_s.upcase}']` or `.focus.yml#config.#{m}` are defined"
+        error = "(#{m}) neither `.focus.yml#config.#{m}` or `ENV['#{m.to_s.upcase}']` are defined"
         raise MissingConfiguration, error
       end
     end
@@ -23,10 +26,6 @@ module Focus
       source_env
       super(configurations)
       ingest _hardcoded
-    end
-
-    def env(m)
-      ENV[m.to_s.upcase]
     end
 
     private

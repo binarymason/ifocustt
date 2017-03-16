@@ -76,7 +76,7 @@ What happens when you run `focus` with the `~/.focus.yml` file above:
 - `Cleanup` is used for any actions to take place after focus time is complete.  Notice that `PostWorkLogToJira` does not require any arguments.
 - Your focus session is complete!
 
-**NOTE:** that environment variables take precedence over configuration settings.  If you would prefer not to have `jira_password` in your `~/.focus.yml` file, it can be specified as an environment variable somewhere as `JIRA_PASSWORD`. If you want to source a particular file that contains secret environment variables, you can add that to your config block:
+**NOTE:** that environment variables can be used as configuration settings.  If you would prefer not to have `jira_password` in your `~/.focus.yml` file, it can be specified as an environment variable somewhere as `JIRA_PASSWORD`. If you want to source a particular file that contains secret environment variables, you can add that to your config block:
 
 ```
 ...
