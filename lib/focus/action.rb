@@ -22,6 +22,17 @@ module Focus
   class Action
     include Interactor
 
+    def perform; end
+
+    def error_message
+      "#{self.class.to_s.split('::').last} failed"
+    end
+
+    # This method is used internally and should not be used within actions.
+    def call
+      perform
+    end
+
     def config
       ContextualConfiguration.new(context)
     end
@@ -48,26 +59,27 @@ module Focus
       focus_seconds * 0.2
     end
 
-    def evaluate_step(klass, args)
+    def fail_action!(opts = {})
+      raise ArgumentError, "An `:error` key must be provided to fail an action" unless (opts.keys & [:error, "error"]).any?
+      context.fail!(opts.merge(action: self.class.to_s.split("::").last))
+    end
+
+    def _evaluate_step(klass, args)
       action = klass.to_s.gsub(/^.*::/, "")
       step = "Running #{action}..."
 
       Focus::STDOUT.step(step, quiet: context.quiet) do
         result = klass.call(args)
-        raise FailedActionError, error_message(result) unless result.success?
+        raise FailedActionError, _failed_action_error(result) unless result.success?
       end
     end
 
-    def error_message(obj)
+    def _failed_action_error(obj)
       "#{obj.action}: #{obj.error}"
     end
 
     def debug_output(*args)
       Focus::STDOUT.debug_output args
-    end
-
-    def fail_action!(opts = {})
-      context.fail!(opts.merge(action: self.class.to_s.split("::").last))
     end
   end
 end

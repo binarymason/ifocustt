@@ -1,10 +1,15 @@
 module Focus
   class ToggleMacNotificationCenter < Action
-    def call
-      toggle if uname == "Darwin"
+    def perform
+      fail_action!(error: "This action only works on MacOSX") unless mac?
+      toggle
     end
 
     private
+
+    def mac?
+      uname == "Darwin"
+    end
 
     def uname
       `uname`.chomp

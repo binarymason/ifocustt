@@ -1,8 +1,8 @@
 module Focus
   class PostWorkLogToJira < Action
-    def call
+    def perform
       return unless jira_ticket && seconds_focused >= 60
-      HTTParty.post(issue_url, options)
+      Utils::WebClient.post(issue_url, options)
     end
 
     private

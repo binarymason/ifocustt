@@ -1,14 +1,11 @@
 module Focus
   class ChangeSlackDoNotDisturb < Action
-    def call
-      context.fail! unless perform
+    def perform
+      res = Utils::WebClient.post(url)
+      fail_action!(error: res) unless res.success?
     end
 
     private
-
-    def perform
-      HTTParty.post(url)
-    end
 
     def url
       if context.enabled

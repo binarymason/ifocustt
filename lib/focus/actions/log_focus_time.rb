@@ -1,7 +1,7 @@
 require "fileutils"
 module Focus
   class LogFocusTime < Action
-    def call
+    def perform
       update_log
     end
 

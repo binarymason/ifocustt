@@ -7,7 +7,7 @@ module Focus
 
     attr_reader :action
 
-    def call
+    def perform
       context.actions = ConfigLoader.load("actions")
       parse_jira_ticket
       Focus::STDOUT.puts_line "Starting focus..."
@@ -102,7 +102,7 @@ module Focus
           klass = constantize(action)
           args  = downcase(keyword_arguments)
 
-          evaluate_step klass, with_default_context(args)
+          _evaluate_step klass, with_default_context(args)
         end
       end
     end

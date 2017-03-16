@@ -1,19 +1,18 @@
 module Focus
   class StartRescueTime < Action
-    def call
-      context.fail! unless perform
+    def perform
+      res = Utils::WebClient.post url
+      fail_action!(error: res) unless res.success?
     end
 
     private
 
-    def perform
-      token = config.ifttt_maker_key
-      if token
-        url = "https://maker.ifttt.com/trigger/#{event}/with/key/#{token}"
-        HTTParty.post url
-      else
-        true
-      end
+    def token
+      config.ifttt_maker_key
+    end
+
+    def url
+      "https://maker.ifttt.com/trigger/#{event}/with/key/#{token}"
     end
 
     def event

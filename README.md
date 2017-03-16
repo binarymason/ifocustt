@@ -85,6 +85,33 @@ config:
   env_file: "~/.secrets"
 ```
 
+## Contributing
+
+Want to create an action? It's super easy.  Just create a class that inherits from `Action` in the [actions](./lib/focus/actions) directory named in a verb form and define a `perform` method. If you want to fail the action, the `fail_action!` is available for you. Here's a quick example:
+
+```
+module Focus
+  class DoSomethingAwesome < Action
+    def perform
+      result = do_amazing_stuff
+      fail_action!(error: "Something went wrong") unless passed?(result)
+    end
+
+    private
+
+    def do_amazing_stuff
+      # ...
+    end
+
+    def passed?(obj)
+      # ...
+    end
+  end
+end
+```
+
+Pull Requests welcome!
+
 ### Dependencies
 
 See each [action](./lib/focus/actions) for dependencies.

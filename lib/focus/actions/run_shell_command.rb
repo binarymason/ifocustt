@@ -1,6 +1,6 @@
 module Focus
   class RunShellCommand < Action
-    def call
+    def perform
       system(context.command.to_s)
     end
   end

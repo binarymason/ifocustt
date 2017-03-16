@@ -1,15 +1,14 @@
 module Focus
   class StrobeBlinkColor < Action
-    def call
-      context.fail! unless perform
+    def perform
+      res = Utils::WebClient.get(url)
+      fail_action!(error: res) unless res.success?
     end
 
     private
 
-    def perform
-      url = "#{config.blink_server}/pattern?rgb=%#{context.color}&time=1.5&repeats=0"
-      res = HTTParty.get(url)
-      res.code == 200
+    def url
+      "#{config.blink_server}/pattern?rgb=%#{context.color}&time=1.5&repeats=0"
     end
   end
 end
