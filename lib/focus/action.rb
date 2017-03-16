@@ -4,8 +4,27 @@ require "interactor"
 module Focus
   class FailedActionError < StandardError; end
 
+  # A small wrapper to an Action's context.
+  # If an attribute is defined in the context, it will be returned.
+  # Otherwise, a lookup within Focus::Config will take place.
+  class ContextualConfiguration
+    attr_reader :context
+
+    def initialize(context)
+      @context = context
+    end
+
+    def method_missing(m, *args, &block) # rubocop:disable MethodMissing
+      context.send(m) || Config.send(m, *args, &block)
+    end
+  end
+
   class Action
     include Interactor
+
+    def config
+      @config ||= ContextualConfiguration.new(context)
+    end
 
     private
 
