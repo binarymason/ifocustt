@@ -23,7 +23,7 @@ module Focus
     include Interactor
 
     def config
-      @config ||= ContextualConfiguration.new(context)
+      ContextualConfiguration.new(context)
     end
 
     private
