@@ -8,7 +8,7 @@ module Focus
     private
 
     def update_log
-      file = File.expand_path Config.focus_history_file
+      file = File.expand_path config.focus_history_file
       new_file = File.exist?(file)
 
       File.open(file, "a") do |fo|

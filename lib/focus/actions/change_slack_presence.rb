@@ -7,9 +7,9 @@ module Focus
     private
 
     def perform
-      token = Config.slack_token
+      token = config.slack_token
       if token
-        url = "#{Config.slack_api_url}/users.setPresence?token=#{token}&presence=#{presence}"
+        url = "#{config.slack_api_url}/users.setPresence?token=#{token}&presence=#{presence}"
         res = HTTParty.post url
         res.code == 200
       else

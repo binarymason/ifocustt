@@ -7,7 +7,7 @@ module Focus
     private
 
     def perform
-      token = Config.ifttt_maker_key
+      token = config.ifttt_maker_key
       if token
         url = "https://maker.ifttt.com/trigger/#{event}/with/key/#{token}"
         HTTParty.post url

@@ -8,7 +8,7 @@ module Focus
     private
 
     def issue_url
-      "#{Config.jira_url}/issue/#{jira_ticket}/worklog"
+      "#{config.jira_url}/issue/#{jira_ticket}/worklog"
     end
 
     def options
@@ -24,7 +24,7 @@ module Focus
     end
 
     def auth
-      { username: Config.jira_username, password: Config.jira_password }
+      { username: config.jira_username, password: config.jira_password }
     end
 
     def headers

@@ -7,7 +7,7 @@ module Focus
     private
 
     def perform
-      url = "#{Config.blink_server}/pattern?rgb=%#{context.color}&time=1.5&repeats=0"
+      url = "#{config.blink_server}/pattern?rgb=%#{context.color}&time=1.5&repeats=0"
       res = HTTParty.get(url)
       res.code == 200
     end
