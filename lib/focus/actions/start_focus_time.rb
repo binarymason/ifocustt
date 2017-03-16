@@ -9,6 +9,8 @@ module Focus
 
     def call
       context.actions = ConfigLoader.load("actions")
+      parse_jira_ticket
+      Focus::STDOUT.puts_line "Starting focus..."
       context.daemonize ? fork { _actions } : _actions
     end
 
@@ -23,6 +25,11 @@ module Focus
     ensure
       cleanup
       happy_message
+    end
+
+    def parse_jira_ticket
+      context.jira_ticket = Utils::ParseJiraTicketFromGitBranch.call.jira_ticket
+      Focus::STDOUT.puts_line "Working on JIRA ticket: '#{context.jira_ticket}'" if context.jira_ticket
     end
 
     def focus

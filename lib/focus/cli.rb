@@ -32,6 +32,7 @@ module Focus
           end
 
           opts.on("-t", "--target=TARGET", "Specify what you are focusing on") do |t|
+            raise ArgumentError, "#{t} is not a valid target name" if t =~ /^\d+(\.\d)?$/
             args.target = t
           end
 
