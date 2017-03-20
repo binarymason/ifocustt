@@ -1,6 +1,7 @@
 module Focus
   class StrobeBlinkColor < Action
     def perform
+      StartBlinkServer.call
       res = Utils::WebClient.get(url)
       fail_action!(error: res) unless res.success?
     end

@@ -24,8 +24,19 @@ module Focus
       " " + Paint["OK", :green]
     end
 
+    def downcase(thing)
+      return unless thing
+      return thing.underscore if thing.respond_to? :underscore
+
+      thing.each_with_object({}) do |(key, value), obj|
+        obj[key.underscore] = value
+      end
+    end
+
     def pastel
       @pastel ||= Pastel.new
     end
   end
 end
+
+require "#{Focus.root}/lib/focus/formatters/progress_bar"

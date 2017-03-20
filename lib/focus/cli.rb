@@ -23,25 +23,31 @@ module Focus
         OptionParser.new do |opts|
           opts.banner = "Usage: focus [options]"
 
-          opts.on("-v", "--verbose", "Run focus with more verbose STDOUT") do
-            args.quiet = false
-          end
-
           opts.on("-d", "--daemonize", "Allow focus to be forked to the background") do
             args.daemonize = true
           end
 
+          opts.on("-h", "--help", "Prints this help") do
+            puts opts
+            exit
+
+          end
+
+          opts.on("-mMINUTES", "--minutes=MINUTES", "How many minutes to focus.") do |m|
+            args.minutes = m
+
+          end
           opts.on("-t", "--target=TARGET", "Specify what you are focusing on") do |t|
             raise ArgumentError, "#{t} is not a valid target name" if t =~ /^\d+(\.\d)?$/
             args.target = t
           end
 
-          opts.on("-mMINUTES", "--minutes=MINUTES", "How many minutes to focus.") do |m|
-            args.minutes = m
+          opts.on("--verbose", "Run focus with more verbose STDOUT") do
+            args.quiet = false
           end
 
-          opts.on("-h", "--help", "Prints this help") do
-            puts opts
+          opts.on("-v", "--version", "Prints version") do
+            puts "ifocusst v-#{Focus::VERSION}"
             exit
           end
         end

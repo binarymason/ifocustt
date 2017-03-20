@@ -4,6 +4,11 @@ require "tty"
 module Focus
   class StartFocusTime < Action
     DEFAULT_CONTEXT_KEYS = %i(minutes target quiet daemonize focus_start).freeze
+    HOOKS = {
+      focus:   "OnFocus",
+      break:   "OnBreak",
+      cleanup: "Cleanup"
+    }.freeze
 
     attr_reader :action
 
@@ -16,80 +21,27 @@ module Focus
 
     private
 
-    def _actions
-      focus
-      take_break
-    rescue SystemExit, Interrupt
-      context.quiet = false
-      Focus::STDOUT.title "Shutting down gracefully..."
-    ensure
-      cleanup
-      happy_message
-    end
-
     def parse_jira_ticket
       context.jira_ticket = Utils::ParseJiraTicketFromGitBranch.call.jira_ticket
       Focus::STDOUT.puts_line "Working on JIRA ticket: '#{context.jira_ticket}'" if context.jira_ticket
     end
 
-    def focus
-      @action = :focus
-      perform_actions "OnFocus"
-      context.focus_start = Time.now.to_i
-      handle_progress_bar
+    def _actions
+      execute_step(:focus) { handle_progress_bar }
+      execute_step(:break) { handle_progress_bar }
+    rescue SystemExit, Interrupt
+      context.quiet = false
+      Focus::STDOUT.title "Shutting down gracefully..."
+    ensure
+      execute_step(:cleanup)
+      happy_message
     end
 
-    def take_break
-      @action = :break
-      perform_actions "OnBreak"
-      handle_progress_bar
-    end
-
-    def cleanup
-      perform_actions "Cleanup"
-    end
-
-    def progress_bar
-      bar_type = @bar ? @bar.format.split.first : :not_defined
-      return @bar if bar_type == action.to_s
-
-      @bar = build_progress_bar
-    end
-
-    def build_progress_bar
-      TTY::ProgressBar.new "#{action} [:bar] :elapsed" do |config|
-        config.total       = seconds_for_action
-        config.interval    = 1
-        config.width       = 40
-      end
-    end
-
-    def seconds_for_action
-      case action
-      when :focus then focus_seconds
-      when :break then break_seconds
-      else
-        raise "Unknown action: '#{action}'"
-      end
-    end
-
-    def every_second
-      end_time = Time.now + seconds_for_action
-
-      while Time.now < end_time
-        timestamp = Time.now
-        yield if block_given?
-        interval = 1 - (Time.now - timestamp)
-        sleep(interval) if interval.positive?
-      end
-    end
-
-    def handle_progress_bar
-      if context.daemonize
-        every_second # sleep
-      else
-        every_second { progress_bar.advance }
-      end
+    def execute_step(step)
+      @action = step.to_sym
+      perform_actions HOOKS.fetch @action
+      context.send("#{step}_start=", Time.now.to_i)
+      yield if block_given?
     end
 
     def perform_actions(event)
@@ -99,8 +51,8 @@ module Focus
 
       actions.each do |hsh|
         hsh.each do |action, keyword_arguments|
-          klass = constantize(action)
-          args  = downcase(keyword_arguments)
+          klass = constantize("Focus::#{action}")
+          args  = Formatter.downcase(keyword_arguments)
 
           _evaluate_step klass, with_default_context(args)
         end
@@ -117,6 +69,41 @@ module Focus
       hsh.merge default_hsh
     end
 
+    def handle_progress_bar
+      if context.daemonize
+        every_second # sleep
+      else
+        every_second { progress_bar.advance }
+      end
+    end
+
+    def every_second
+      end_time = Time.now + seconds_for_action
+
+      while Time.now < end_time
+        timestamp = Time.now
+        yield if block_given?
+        interval = 1 - (Time.now - timestamp)
+        sleep(interval) if interval.positive?
+      end
+    end
+
+    def progress_bar
+      bar_type = @bar ? @bar.type : :not_defined
+      return @bar if bar_type == action.to_s
+
+      @bar = Formatter::ProgressBar.new(action, seconds: seconds_for_action)
+    end
+
+    def seconds_for_action
+      case action.to_sym
+      when :focus then focus_seconds
+      when :break then break_seconds
+      else
+        raise "Unknown action: '#{action}'"
+      end
+    end
+
     def default_hsh
       slice_hash context.to_h, DEFAULT_CONTEXT_KEYS
     end
@@ -126,22 +113,13 @@ module Focus
       hsh.select { |k, _v| keys.include? k }
     end
 
-    def downcase(thing)
-      return unless thing
-      return thing.underscore if thing.respond_to? :underscore
-
-      thing.each_with_object({}) do |(key, value), obj|
-        obj[key.underscore] = value
-      end
+    def constantize(str)
+      Object.const_get str
     end
 
     def happy_message
       return if context.quiet
       Focus::STDOUT.puts_line "\nProcess complete."
-    end
-
-    def constantize(str)
-      Object.const_get "Focus::#{str}"
     end
   end
 end

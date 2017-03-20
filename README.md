@@ -33,12 +33,12 @@ Examples of what you might like when you are focusing...
 
 ```
 Usage: focus [options]
--v, --verbose                    Run focus with more verbose STDOUT
--d, --daemonize                  Allow focus to be forked to the background
--t, --target=TARGET              Specify what you are focusing on
--m, --minutes=MINUTES            How many minutes to focus.
--h, --help                       Prints this help
-
+    -d, --daemonize                  Allow focus to be forked to the background
+    -h, --help                       Prints this help
+    -m, --minutes=MINUTES            How many minutes to focus.
+    -t, --target=TARGET              Specify what you are focusing on
+        --verbose                    Run focus with more verbose STDOUT
+    -v, --version                    Prints version
 ```
 
 ## How does it work?
